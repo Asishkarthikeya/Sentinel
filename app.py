@@ -155,6 +155,23 @@ with st.sidebar:
             <div><span class="status-dot {dot_class}"></span><span style="font-size: 0.8rem; color: #94a3b8;">{status.split(' ')[1]}</span></div>
         </div>
         """, unsafe_allow_html=True)
+        
+        # Auto-Show Logs if Offline
+        if status == "⚠️ Error" or status == "❌ Offline":
+            log_map = {
+                "Gateway": "mcp_gateway.log",
+                "Tavily": "tavily_mcp.log",
+                "Alpha Vantage": "alphavantage_mcp.log",
+                "Private DB": "private_mcp.log"
+            }
+            log_file = log_map.get(name)
+            if log_file and os.path.exists(f"logs/{log_file}"):
+                with st.expander(f"⚠️ {name} Logs", expanded=False):
+                    try:
+                        with open(f"logs/{log_file}", "r") as f:
+                            st.code("".join(f.readlines()[-20:]), language="text")
+                    except Exception as e:
+                        st.caption(f"Could not read logs: {e}")
 
     st.markdown("---")
     

@@ -8,16 +8,18 @@ import logging
 
 # --- Configuration ---
 load_dotenv()
+
+# --- Logging Setup (MUST be before we use logger) ---
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+logger = logging.getLogger("Tavily_MCP_Server")
+
+# --- Get API Key ---
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 if not TAVILY_API_KEY:
     logger.warning("TAVILY_API_KEY not found in environment. Search features will fail.")
 else:
     logger.info(f"TAVILY_API_KEY found: {TAVILY_API_KEY[:4]}...")
-
-# --- Logging Setup ---
-logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
-logger = logging.getLogger("Tavily_MCP_Server")
 
 # --- FastAPI App & Tavily Client ---
 app = FastAPI(title="Aegis Tavily MCP Server")

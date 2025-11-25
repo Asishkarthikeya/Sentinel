@@ -16,6 +16,18 @@ logger = logging.getLogger("AlphaVantage_MCP_Server")
 # --- Get API Key ---
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 
+# Fallback: Try to read from Streamlit secrets file (for cloud deployment)
+if not ALPHA_VANTAGE_API_KEY:
+    try:
+        import toml
+        secrets_path = os.path.join(os.path.dirname(__file__), ".streamlit", "secrets.toml")
+        if os.path.exists(secrets_path):
+            secrets = toml.load(secrets_path)
+            ALPHA_VANTAGE_API_KEY = secrets.get("ALPHA_VANTAGE_API_KEY")
+            logger.info("Loaded ALPHA_VANTAGE_API_KEY from .streamlit/secrets.toml")
+    except Exception as e:
+        logger.warning(f"Could not load from secrets.toml: {e}")
+
 if not ALPHA_VANTAGE_API_KEY:
     logger.warning("ALPHA_VANTAGE_API_KEY not found in environment. Market data features will fail.")
 else:

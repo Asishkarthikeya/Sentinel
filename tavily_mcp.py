@@ -11,7 +11,9 @@ load_dotenv()
 TAVILY_API_KEY = os.getenv("TAVILY_API_KEY")
 
 if not TAVILY_API_KEY:
-    raise ValueError("TAVILY_API_KEY not found in .env file. Please add it.")
+    logger.warning("TAVILY_API_KEY not found in environment. Search features will fail.")
+else:
+    logger.info(f"TAVILY_API_KEY found: {TAVILY_API_KEY[:4]}...")
 
 # --- Logging Setup ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

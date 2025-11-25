@@ -1,0 +1,552 @@
+[
+  {
+    "timestamp": "2025-11-25T11:20:17.059276",
+    "type": "MARKET",
+    "symbol": "GOOGL",
+    "message": "\ud83d\udea8 PRICE ALERT: GOOGL moved -0.31% to $251.65",
+    "details": {
+      "price": 251.65,
+      "change": -0.3050471436494659,
+      "timestamp": "2025-11-25 11:20:17"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:20:15.903799",
+    "type": "MARKET",
+    "symbol": "MSFT",
+    "message": "\ud83d\udea8 PRICE ALERT: MSFT moved 0.06% to $473.80",
+    "details": {
+      "price": 473.8,
+      "change": 0.06335797254488096,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:20:15.408186",
+    "type": "MARKET",
+    "symbol": "NVDA",
+    "message": "\ud83d\udea8 PRICE ALERT: NVDA moved 0.03% to $179.78",
+    "details": {
+      "price": 179.78,
+      "change": 0.02787516156188519,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:20:15.064362",
+    "type": "MARKET",
+    "symbol": "TSLA",
+    "message": "\ud83d\udea8 PRICE ALERT: TSLA moved 0.01% to $418.75",
+    "details": {
+      "price": 418.75,
+      "change": 0.01194172438500391,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:20:14.773658",
+    "type": "MARKET",
+    "symbol": "AAPL",
+    "message": "\ud83d\udea8 PRICE ALERT: AAPL moved 0.10% to $275.73",
+    "details": {
+      "price": 275.73,
+      "change": 0.09801786103246886,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:19:14.418534",
+    "type": "MARKET",
+    "symbol": "GOOGL",
+    "message": "\ud83d\udea8 PRICE ALERT: GOOGL moved -0.31% to $251.65",
+    "details": {
+      "price": 251.65,
+      "change": -0.3050471436494659,
+      "timestamp": "2025-11-25 11:19:14"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:19:13.549969",
+    "type": "MARKET",
+    "symbol": "MSFT",
+    "message": "\ud83d\udea8 PRICE ALERT: MSFT moved 0.06% to $473.80",
+    "details": {
+      "price": 473.8,
+      "change": 0.06335797254488096,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:19:13.062906",
+    "type": "MARKET",
+    "symbol": "NVDA",
+    "message": "\ud83d\udea8 PRICE ALERT: NVDA moved 0.03% to $179.78",
+    "details": {
+      "price": 179.78,
+      "change": 0.02787516156188519,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:19:12.745349",
+    "type": "MARKET",
+    "symbol": "TSLA",
+    "message": "\ud83d\udea8 PRICE ALERT: TSLA moved 0.01% to $418.75",
+    "details": {
+      "price": 418.75,
+      "change": 0.01194172438500391,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:19:12.258868",
+    "type": "MARKET",
+    "symbol": "AAPL",
+    "message": "\ud83d\udea8 PRICE ALERT: AAPL moved 0.10% to $275.73",
+    "details": {
+      "price": 275.73,
+      "change": 0.09801786103246886,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:18:11.868377",
+    "type": "MARKET",
+    "symbol": "GOOGL",
+    "message": "\ud83d\udea8 PRICE ALERT: GOOGL moved -0.31% to $251.65",
+    "details": {
+      "price": 251.65,
+      "change": -0.3050471436494659,
+      "timestamp": "2025-11-25 11:18:11"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:18:11.112758",
+    "type": "MARKET",
+    "symbol": "MSFT",
+    "message": "\ud83d\udea8 PRICE ALERT: MSFT moved 0.06% to $473.80",
+    "details": {
+      "price": 473.8,
+      "change": 0.06335797254488096,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:18:10.729102",
+    "type": "MARKET",
+    "symbol": "NVDA",
+    "message": "\ud83d\udea8 PRICE ALERT: NVDA moved 0.03% to $179.78",
+    "details": {
+      "price": 179.78,
+      "change": 0.02787516156188519,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:18:10.163466",
+    "type": "MARKET",
+    "symbol": "TSLA",
+    "message": "\ud83d\udea8 PRICE ALERT: TSLA moved 0.01% to $418.75",
+    "details": {
+      "price": 418.75,
+      "change": 0.01194172438500391,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:18:09.565287",
+    "type": "MARKET",
+    "symbol": "AAPL",
+    "message": "\ud83d\udea8 PRICE ALERT: AAPL moved 0.10% to $275.73",
+    "details": {
+      "price": 275.73,
+      "change": 0.09801786103246886,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:17:09.126660",
+    "type": "MARKET",
+    "symbol": "GOOGL",
+    "message": "\ud83d\udea8 PRICE ALERT: GOOGL moved -0.31% to $251.65",
+    "details": {
+      "price": 251.65,
+      "change": -0.3050471436494659,
+      "timestamp": "2025-11-25 11:17:09"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:17:08.478861",
+    "type": "MARKET",
+    "symbol": "MSFT",
+    "message": "\ud83d\udea8 PRICE ALERT: MSFT moved 0.06% to $473.80",
+    "details": {
+      "price": 473.8,
+      "change": 0.06335797254488096,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:17:08.004110",
+    "type": "MARKET",
+    "symbol": "NVDA",
+    "message": "\ud83d\udea8 PRICE ALERT: NVDA moved 0.03% to $179.78",
+    "details": {
+      "price": 179.78,
+      "change": 0.02787516156188519,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:17:07.472436",
+    "type": "MARKET",
+    "symbol": "TSLA",
+    "message": "\ud83d\udea8 PRICE ALERT: TSLA moved 0.01% to $418.75",
+    "details": {
+      "price": 418.75,
+      "change": 0.01194172438500391,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:17:06.933502",
+    "type": "MARKET",
+    "symbol": "AAPL",
+    "message": "\ud83d\udea8 PRICE ALERT: AAPL moved 0.10% to $275.73",
+    "details": {
+      "price": 275.73,
+      "change": 0.09801786103246886,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:16:06.499244",
+    "type": "MARKET",
+    "symbol": "GOOGL",
+    "message": "\ud83d\udea8 PRICE ALERT: GOOGL moved -0.31% to $251.65",
+    "details": {
+      "price": 251.65,
+      "change": -0.3050471436494659,
+      "timestamp": "2025-11-25 11:16:06"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:16:05.710429",
+    "type": "MARKET",
+    "symbol": "MSFT",
+    "message": "\ud83d\udea8 PRICE ALERT: MSFT moved 0.06% to $473.80",
+    "details": {
+      "price": 473.8,
+      "change": 0.06335797254488096,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:16:05.265392",
+    "type": "MARKET",
+    "symbol": "NVDA",
+    "message": "\ud83d\udea8 PRICE ALERT: NVDA moved 0.03% to $179.78",
+    "details": {
+      "price": 179.78,
+      "change": 0.02787516156188519,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:16:04.936100",
+    "type": "MARKET",
+    "symbol": "TSLA",
+    "message": "\ud83d\udea8 PRICE ALERT: TSLA moved 0.01% to $418.75",
+    "details": {
+      "price": 418.75,
+      "change": 0.01194172438500391,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:16:04.609338",
+    "type": "MARKET",
+    "symbol": "AAPL",
+    "message": "\ud83d\udea8 PRICE ALERT: AAPL moved 0.10% to $275.73",
+    "details": {
+      "price": 275.73,
+      "change": 0.09801786103246886,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:15:04.117027",
+    "type": "MARKET",
+    "symbol": "GOOGL",
+    "message": "\ud83d\udea8 PRICE ALERT: GOOGL moved -0.31% to $251.65",
+    "details": {
+      "price": 251.65,
+      "change": -0.3050471436494659,
+      "timestamp": "2025-11-25 11:15:04"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:15:03.501699",
+    "type": "MARKET",
+    "symbol": "MSFT",
+    "message": "\ud83d\udea8 PRICE ALERT: MSFT moved 0.06% to $473.80",
+    "details": {
+      "price": 473.8,
+      "change": 0.06335797254488096,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:15:03.006893",
+    "type": "MARKET",
+    "symbol": "NVDA",
+    "message": "\ud83d\udea8 PRICE ALERT: NVDA moved 0.03% to $179.78",
+    "details": {
+      "price": 179.78,
+      "change": 0.02787516156188519,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:15:02.269835",
+    "type": "MARKET",
+    "symbol": "TSLA",
+    "message": "\ud83d\udea8 PRICE ALERT: TSLA moved 0.01% to $418.75",
+    "details": {
+      "price": 418.75,
+      "change": 0.01194172438500391,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:15:01.808987",
+    "type": "MARKET",
+    "symbol": "AAPL",
+    "message": "\ud83d\udea8 PRICE ALERT: AAPL moved 0.10% to $275.73",
+    "details": {
+      "price": 275.73,
+      "change": 0.09801786103246886,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:14:01.085178",
+    "type": "MARKET",
+    "symbol": "GOOGL",
+    "message": "\ud83d\udea8 PRICE ALERT: GOOGL moved -0.31% to $251.65",
+    "details": {
+      "price": 251.65,
+      "change": -0.3050471436494659,
+      "timestamp": "2025-11-25 11:14:01"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:14:00.202877",
+    "type": "MARKET",
+    "symbol": "MSFT",
+    "message": "\ud83d\udea8 PRICE ALERT: MSFT moved 0.06% to $473.80",
+    "details": {
+      "price": 473.8,
+      "change": 0.06335797254488096,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:13:59.633468",
+    "type": "MARKET",
+    "symbol": "NVDA",
+    "message": "\ud83d\udea8 PRICE ALERT: NVDA moved 0.03% to $179.78",
+    "details": {
+      "price": 179.78,
+      "change": 0.02787516156188519,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:13:59.060372",
+    "type": "MARKET",
+    "symbol": "TSLA",
+    "message": "\ud83d\udea8 PRICE ALERT: TSLA moved 0.01% to $418.75",
+    "details": {
+      "price": 418.75,
+      "change": 0.01194172438500391,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:13:58.773622",
+    "type": "MARKET",
+    "symbol": "AAPL",
+    "message": "\ud83d\udea8 PRICE ALERT: AAPL moved 0.10% to $275.73",
+    "details": {
+      "price": 275.73,
+      "change": 0.09801786103246886,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:12:58.453260",
+    "type": "MARKET",
+    "symbol": "GOOGL",
+    "message": "\ud83d\udea8 PRICE ALERT: GOOGL moved -0.31% to $251.65",
+    "details": {
+      "price": 251.65,
+      "change": -0.3050471436494659,
+      "timestamp": "2025-11-25 11:12:58"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:12:57.818517",
+    "type": "MARKET",
+    "symbol": "MSFT",
+    "message": "\ud83d\udea8 PRICE ALERT: MSFT moved 0.06% to $473.80",
+    "details": {
+      "price": 473.8,
+      "change": 0.06335797254488096,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:12:57.266622",
+    "type": "MARKET",
+    "symbol": "NVDA",
+    "message": "\ud83d\udea8 PRICE ALERT: NVDA moved 0.03% to $179.78",
+    "details": {
+      "price": 179.78,
+      "change": 0.02787516156188519,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:12:56.819716",
+    "type": "MARKET",
+    "symbol": "TSLA",
+    "message": "\ud83d\udea8 PRICE ALERT: TSLA moved 0.01% to $418.75",
+    "details": {
+      "price": 418.75,
+      "change": 0.01194172438500391,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:12:56.334809",
+    "type": "MARKET",
+    "symbol": "AAPL",
+    "message": "\ud83d\udea8 PRICE ALERT: AAPL moved 0.10% to $275.73",
+    "details": {
+      "price": 275.73,
+      "change": 0.09801786103246886,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:11:55.787937",
+    "type": "MARKET",
+    "symbol": "GOOGL",
+    "message": "\ud83d\udea8 PRICE ALERT: GOOGL moved -0.31% to $251.65",
+    "details": {
+      "price": 251.65,
+      "change": -0.3050471436494659,
+      "timestamp": "2025-11-25 11:11:55"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:11:55.228155",
+    "type": "MARKET",
+    "symbol": "MSFT",
+    "message": "\ud83d\udea8 PRICE ALERT: MSFT moved 0.06% to $473.80",
+    "details": {
+      "price": 473.8,
+      "change": 0.06335797254488096,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:11:54.625623",
+    "type": "MARKET",
+    "symbol": "NVDA",
+    "message": "\ud83d\udea8 PRICE ALERT: NVDA moved 0.03% to $179.78",
+    "details": {
+      "price": 179.78,
+      "change": 0.02787516156188519,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:11:54.133634",
+    "type": "MARKET",
+    "symbol": "TSLA",
+    "message": "\ud83d\udea8 PRICE ALERT: TSLA moved 0.01% to $418.75",
+    "details": {
+      "price": 418.75,
+      "change": 0.01194172438500391,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:11:53.771595",
+    "type": "MARKET",
+    "symbol": "AAPL",
+    "message": "\ud83d\udea8 PRICE ALERT: AAPL moved 0.10% to $275.73",
+    "details": {
+      "price": 275.73,
+      "change": 0.09801786103246886,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:10:53.379224",
+    "type": "MARKET",
+    "symbol": "GOOGL",
+    "message": "\ud83d\udea8 PRICE ALERT: GOOGL moved -0.31% to $251.65",
+    "details": {
+      "price": 251.65,
+      "change": -0.3050471436494659,
+      "timestamp": "2025-11-25 11:10:53"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:10:52.575130",
+    "type": "MARKET",
+    "symbol": "MSFT",
+    "message": "\ud83d\udea8 PRICE ALERT: MSFT moved 0.06% to $473.80",
+    "details": {
+      "price": 473.8,
+      "change": 0.06335797254488096,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:10:52.121328",
+    "type": "MARKET",
+    "symbol": "NVDA",
+    "message": "\ud83d\udea8 PRICE ALERT: NVDA moved 0.03% to $179.78",
+    "details": {
+      "price": 179.78,
+      "change": 0.02787516156188519,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:10:51.841109",
+    "type": "MARKET",
+    "symbol": "TSLA",
+    "message": "\ud83d\udea8 PRICE ALERT: TSLA moved 0.01% to $418.75",
+    "details": {
+      "price": 418.75,
+      "change": 0.01194172438500391,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  },
+  {
+    "timestamp": "2025-11-25T11:10:51.196982",
+    "type": "MARKET",
+    "symbol": "AAPL",
+    "message": "\ud83d\udea8 PRICE ALERT: AAPL moved 0.10% to $275.73",
+    "details": {
+      "price": 275.73,
+      "change": 0.09801786103246886,
+      "timestamp": "2025-11-24 19:55:00"
+    }
+  }
+]

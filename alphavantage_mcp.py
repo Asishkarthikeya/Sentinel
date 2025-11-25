@@ -11,7 +11,9 @@ load_dotenv()
 ALPHA_VANTAGE_API_KEY = os.getenv("ALPHA_VANTAGE_API_KEY")
 
 if not ALPHA_VANTAGE_API_KEY:
-    raise ValueError("ALPHA_VANTAGE_API_KEY not found in .env file. Please add it.")
+    logger.warning("ALPHA_VANTAGE_API_KEY not found in environment. Market data features will fail.")
+else:
+    logger.info(f"ALPHA_VANTAGE_API_KEY found: {ALPHA_VANTAGE_API_KEY[:4]}...")
 
 # --- Logging Setup ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')

@@ -58,6 +58,24 @@ def start_background_services():
     if not os.path.exists("logs"):
         os.makedirs("logs")
 
+    # Prepare environment variables
+    # Streamlit Cloud stores secrets in st.secrets, which might not be fully propagated to os.environ for subprocesses
+    env = os.environ.copy()
+    try:
+        # Flatten st.secrets into env vars
+        def flatten_secrets(secrets, prefix=""):
+            for key, value in secrets.items():
+                if isinstance(value, dict):
+                    flatten_secrets(value, f"{prefix}{key}_")
+                else:
+                    env[f"{prefix}{key}"] = str(value)
+        
+        if hasattr(st, "secrets"):
+            flatten_secrets(st.secrets)
+            print("✅ Injected st.secrets into subprocess environment.")
+    except Exception as e:
+        print(f"⚠️ Failed to process st.secrets: {e}")
+
     for script, port in services:
         print(f"🚀 Starting {script} on port {port}...")
         log_file = open(f"logs/{script.replace('.py', '.log')}", "w")
@@ -66,7 +84,8 @@ def start_background_services():
             [sys.executable, script],
             cwd=os.path.dirname(os.path.abspath(__file__)),
             stdout=log_file, 
-            stderr=subprocess.STDOUT # Capture stderr in the same file
+            stderr=subprocess.STDOUT, # Capture stderr in the same file
+            env=env # Explicitly pass the environment with secrets
         )
     
     # Start Monitor separately

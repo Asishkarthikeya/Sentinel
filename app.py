@@ -54,27 +54,33 @@ def start_background_services():
         ["private_mcp.py", "8003"]
     ]
 
+    # Create logs directory if it doesn't exist
+    if not os.path.exists("logs"):
+        os.makedirs("logs")
+
     for script, port in services:
         print(f"🚀 Starting {script} on port {port}...")
+        log_file = open(f"logs/{script.replace('.py', '.log')}", "w")
         # Use sys.executable to ensure we use the same Python environment
         subprocess.Popen(
             [sys.executable, script],
             cwd=os.path.dirname(os.path.abspath(__file__)),
-            stdout=subprocess.DEVNULL, # Redirect output to avoid clutter
-            stderr=subprocess.DEVNULL
+            stdout=log_file, 
+            stderr=subprocess.STDOUT # Capture stderr in the same file
         )
     
     # Start Monitor separately
     print("🚀 Starting Monitor...")
+    monitor_log = open("logs/monitor.log", "w")
     subprocess.Popen(
         [sys.executable, "monitor.py"],
         cwd=os.path.dirname(os.path.abspath(__file__)),
-        stdout=subprocess.DEVNULL,
-        stderr=subprocess.DEVNULL
+        stdout=monitor_log,
+        stderr=subprocess.STDOUT
     )
 
     # Wait a moment for services to initialize
-    time.sleep(5)
+    time.sleep(10)
 
 # Initialize services once
 start_background_services()

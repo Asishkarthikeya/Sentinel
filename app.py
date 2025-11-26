@@ -17,9 +17,10 @@ WATCHLIST_FILE = "watchlist.json"
 ALERTS_FILE = "alerts.json"
 
 # --- Page Configuration ---
+# --- Page Configuration ---
 st.set_page_config(
-    page_title="Sentinel",
-    page_icon="🛡️",
+    page_title="AIDA - AI Data Analyzer",
+    page_icon="assets/logo.png",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -144,6 +145,22 @@ if 'error_message' not in st.session_state:
 
 # --- SIDEBAR ---
 with st.sidebar:
+    with st.expander("💡 Quick Help", expanded=True):
+        st.markdown("""
+        **Supported Formats:**
+        *   CSV files (.csv)
+        *   Excel files (.xlsx, .xls)
+        *   JSON files (.json)
+        
+        **Best Practices:**
+        *   Clean column names
+        *   Handle missing values
+        *   Include date columns
+        *   Mix numeric & categorical data
+        
+        [Documentation](#) | [Examples](#)
+        """)
+    
     st.markdown("### 📡 System Status")
     server_statuses = check_server_status()
     all_online = all(s == "✅ Online" for s in server_statuses.values())
@@ -230,7 +247,6 @@ with st.sidebar:
 # --- MAIN LAYOUT ---
 
 # Header
-# Header
 def get_base64_image(image_path):
     try:
         with open(image_path, "rb") as img_file:
@@ -243,7 +259,14 @@ logo_base64 = get_base64_image("assets/logo.png")
 st.markdown(f"""
 <div class="main-header">
     <img src="data:image/png;base64,{logo_base64}" class="logo-img">
-    <span class="header-title">SENTINEL</span>
+    <div>
+        <span class="header-title">AIDA</span>
+        <div style="margin-top: 5px; color: #a1a1aa; font-size: 1.1rem;">AI Data Analyzer</div>
+    </div>
+</div>
+<div style="text-align: center; margin-bottom: 2rem; padding: 1rem; background: rgba(255,255,255,0.03); border-radius: 12px;">
+    <h3 style="margin-bottom: 0.5rem; color: var(--text-primary);">Transform your raw data into actionable business insights with the power of AI.</h3>
+    <p style="color: var(--text-secondary);">Upload, analyze, and discover patterns automatically using intelligent agents.</p>
 </div>
 """, unsafe_allow_html=True)
 

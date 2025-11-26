@@ -7,7 +7,7 @@ import re
 from typing import TypedDict, Dict, Any, List
 
 from langgraph.graph import StateGraph, END
-from langchain_groq import ChatGroq
+from langchain_google_genai import ChatGoogleGenerativeAI
 
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -20,7 +20,7 @@ class AnalysisState(TypedDict):
     charts: List[Any]
 
 class DataAnalysisAgent:
-    def __init__(self, llm: ChatGroq):
+    def __init__(self, llm: ChatGoogleGenerativeAI):
         self.llm = llm
         self.workflow = self._create_workflow()
 

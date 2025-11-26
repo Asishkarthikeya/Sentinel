@@ -208,14 +208,12 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("### 🧠 Model Configuration")
-    llm_provider = st.radio("Select Intelligence Engine:", ["Groq (Llama 3)", "Google Gemini"], index=0)
+    st.markdown("### 🧠 Model Configuration")
+    # Defaulting to Google Gemini as requested
+    llm_provider = "Google Gemini"
+    provider_code = "gemini"
     
-    api_key_input = st.text_input("API Key (Optional if in .env):", type="password")
-    
-    if llm_provider == "Groq (Llama 3)":
-        provider_code = "groq"
-    else:
-        provider_code = "gemini"
+    api_key_input = st.text_input("Gemini API Key (Optional if in .env):", type="password")
 
     st.markdown("---")
     with st.expander("🛠️ Admin Dashboard (Logs)"):

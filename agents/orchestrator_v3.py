@@ -11,7 +11,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from agents.tool_calling_agents import WebResearchAgent, MarketDataAgent, InternalPortfolioAgent
 from agents.data_analysis_agent import DataAnalysisAgent
-from langchain_groq import ChatGroq
+
 from langchain_google_genai import ChatGoogleGenerativeAI
 
 # --- Configuration ---
@@ -39,28 +39,17 @@ class AgentState(TypedDict):
     debug_dataframe_head: Any
     debug_analysis_results_full: Any
 
-def get_orchestrator(llm_provider="groq", api_key=None):
+def get_orchestrator(llm_provider="gemini", api_key=None):
     """
     Factory function to create the orchestrator graph with a specific LLM.
     """
     
-    # 1. Initialize LLM based on provider
-    if llm_provider == "groq":
-        if not api_key:
-            api_key = os.getenv("GROQ_API_KEY")
-        if not api_key:
-            raise ValueError("Groq API Key is missing.")
-        llm = ChatGroq(temperature=0, groq_api_key=api_key, model_name="llama-3.1-8b-instant")
-        
-    elif llm_provider == "gemini":
-        if not api_key:
-            api_key = os.getenv("GOOGLE_API_KEY")
-        if not api_key:
-            raise ValueError("Google Gemini API Key is missing.")
-        llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=api_key, temperature=0)
-        
-    else:
-        raise ValueError(f"Unsupported LLM provider: {llm_provider}")
+    # 1. Initialize LLM (Gemini Only)
+    if not api_key:
+        api_key = os.getenv("GOOGLE_API_KEY")
+    if not api_key:
+        raise ValueError("Google Gemini API Key is missing.")
+    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=api_key, temperature=0)
 
     # 2. Initialize Data Analyzer with the chosen LLM
     data_analyzer = DataAnalysisAgent(llm=llm)
@@ -218,7 +207,7 @@ def get_orchestrator(llm_provider="groq", api_key=None):
     def synthesize_report_step(state: AgentState):
         print("--- 📝 Synthesizing Final Report ---")
         
-        # Helper to truncate text to avoid Rate Limits (Groq TPM ~6000)
+        # Helper to truncate text to avoid Rate Limits
         def truncate(text, max_chars=3000):
             s = str(text)
             if len(s) > max_chars:

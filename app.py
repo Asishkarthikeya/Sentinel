@@ -208,7 +208,7 @@ with st.sidebar:
 
     st.markdown("---")
     st.markdown("### 🧠 Model Configuration")
-    st.markdown("### 🧠 Model Configuration")
+
     # Defaulting to Google Gemini as requested
     llm_provider = "Google Gemini"
     provider_code = "gemini"

@@ -6,6 +6,7 @@ import pandas as pd
 import json
 import time
 from datetime import datetime
+import base64
 
 # --- Path Setup ---
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '.')))
@@ -229,18 +230,19 @@ with st.sidebar:
 # --- MAIN LAYOUT ---
 
 # Header
-st.markdown("""
+# Header
+def get_base64_image(image_path):
+    try:
+        with open(image_path, "rb") as img_file:
+            return base64.b64encode(img_file.read()).decode()
+    except Exception:
+        return ""
+
+logo_base64 = get_base64_image("assets/logo.png")
+
+st.markdown(f"""
 <div class="main-header">
-    <div class="logo-container">
-        <div class="cube">
-            <div class="face front">🛡️</div>
-            <div class="face back">⚡</div>
-            <div class="face right">S</div>
-            <div class="face left">AI</div>
-            <div class="face top"></div>
-            <div class="face bottom"></div>
-        </div>
-    </div>
+    <img src="data:image/png;base64,{logo_base64}" class="logo-img">
     <span class="header-title">SENTINEL</span>
 </div>
 """, unsafe_allow_html=True)

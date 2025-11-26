@@ -44,7 +44,7 @@ This guide explains how to deploy the Aegis Financial Analyst Agent using Docker
 
 ## Environment Variables
 Ensure your `.env` file contains:
-- `GROQ_API_KEY`
+
 - `GOOGLE_API_KEY`
 - `TAVILY_API_KEY`
 - `ALPHA_VANTAGE_API_KEY`

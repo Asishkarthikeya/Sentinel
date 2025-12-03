@@ -229,16 +229,33 @@ def render_sidebar():
                         st.rerun()
 
 def render_home():
-    # Hero Section
-    st.markdown("""
-    <div class="hero-container">
-        <h1 class="hero-title">Sentinel AI<br>Financial Intelligence</h1>
-        <p class="hero-subtitle">
-            Transform raw market data into actionable business insights with the power of AI.
-            Analyze stocks, news, and portfolios automatically using intelligent agents.
-        </p>
-    </div>
-    """, unsafe_allow_html=True)
+    # Hero Section with Logo
+    logo_base64 = get_base64_image("assets/logo.png")
+    
+    if logo_base64:
+        st.markdown(f"""
+        <div class="hero-container">
+            <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 1.5rem;">
+                <img src="data:image/png;base64,{logo_base64}" style="width: 80px; height: 80px;">
+                <h1 class="hero-title" style="margin: 0;">Sentinel AI<br>Financial Intelligence</h1>
+            </div>
+            <p class="hero-subtitle">
+                Transform raw market data into actionable business insights with the power of AI.
+                Analyze stocks, news, and portfolios automatically using intelligent agents.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
+    else:
+        # Fallback without logo
+        st.markdown("""
+        <div class="hero-container">
+            <h1 class="hero-title">Sentinel AI<br>Financial Intelligence</h1>
+            <p class="hero-subtitle">
+                Transform raw market data into actionable business insights with the power of AI.
+                Analyze stocks, news, and portfolios automatically using intelligent agents.
+            </p>
+        </div>
+        """, unsafe_allow_html=True)
     
     col1, col2, col3 = st.columns([1, 2, 1])
     with col2:

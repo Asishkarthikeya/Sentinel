@@ -63,7 +63,12 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
         prompt = f"""
         Analyze the user's request: "{state['task']}"
         
-        Extract the ticker symbol or scan intent.
+        Your ONLY job is to determine: Does the user want analysis of ONE specific company, or a SCAN of multiple companies?
+        
+        RULES:
+        1. If the request mentions a SPECIFIC company name or ticker → Extract the symbol, set scan_intent to null
+        2. ONLY set scan_intent if the user explicitly asks for "top gainers", "losers", "scan", "compare multiple", etc.
+        3. When in doubt, assume it's a single-stock request (symbol), NOT a scan.
         
         Response Format: JSON ONLY.
         {{
@@ -72,10 +77,15 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
         }}
         
         Examples:
-        - "Analyze Tesla" -> {{"symbol": "TSLA", "scan_intent": null}}
-        - "Show me top gainers" -> {{"symbol": null, "scan_intent": "UPWARD"}}
-        - "How is Apple doing?" -> {{"symbol": "AAPL", "scan_intent": null}}
-        - "Hello" -> {{"symbol": null, "scan_intent": null}}
+        - "Analyze Tesla" → {{"symbol": "TSLA", "scan_intent": null}}
+        - "How is Apple doing?" → {{"symbol": "AAPL", "scan_intent": null}}
+        - "Report on NVDA" → {{"symbol": "NVDA", "scan_intent": null}}
+        - "Tesla stock analysis" → {{"symbol": "TSLA", "scan_intent": null}}
+        - "Show me top gainers" → {{"symbol": null, "scan_intent": "UPWARD"}}
+        - "Scan the market for losers" → {{"symbol": null, "scan_intent": "DOWNWARD"}}
+        - "Compare all stocks" → {{"symbol": null, "scan_intent": "ALL"}}
+        
+        CRITICAL: "Analyze [COMPANY]" = single stock analysis, NOT a scan!
         """
         raw_response = llm.invoke(prompt).content.strip()
         
@@ -95,7 +105,7 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
                 print(f"   WARNING: No JSON found in extraction response: {raw_response}")
                 # Fallback to simple cleaning
                 clean_resp = raw_response.strip().upper()
-                if "SCAN" in clean_resp:
+                if "SCAN" in clean_resp or "GAINERS" in clean_resp or "LOSERS" in clean_resp:
                     scan_intent = "ALL" # Default fallback
                 elif len(clean_resp) <= 5 and clean_resp.isalpha():
                     symbol = clean_resp

@@ -2,7 +2,6 @@ streamlit
 langchain
 langchain-core
 langgraph
-
 pydantic<3,>=2
 pandas
 plotly

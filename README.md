@@ -1,7 +1,7 @@
 ---
 title: Sentinel AI Financial Intelligence
 emoji: 🛡️
-colorFrom: black
+colorFrom: gray
 colorTo: indigo
 sdk: streamlit
 sdk_version: 1.29.0

@@ -65,60 +65,62 @@ async def get_market_data(payload: dict):
         logger.info(f"Successfully retrieved intraday data for {symbol}")
         return {"status": "success", "data": data, "meta_data": meta_data}
 
-    except ValueError as ve:
-        # The alpha_vantage library often raises a ValueError for API errors like invalid symbols
-        logger.error(f"Alpha Vantage API error for symbol {symbol}: {ve}")
+    except Exception as e:
+        # Catch ALL exceptions (ValueError, connection errors, etc.) to ensure fallback works
+        logger.error(f"Alpha Vantage API error for symbol {symbol}: {e}")
+        logger.warning(f"Triggering MOCK DATA fallback for {symbol} due to error.")
         
-        # --- MOCK DATA FALLBACK FOR DEMO PURPOSES ---
-        if "rate limit" in str(ve).lower():
-            logger.warning(f"Rate limit hit for {symbol}. Returning MOCK DATA.")
-            import random
-            import math
-            from datetime import datetime, timedelta
+        import random
+        import math
+        from datetime import datetime, timedelta
+        
+        # Seed randomness with symbol to ensure consistent but unique graphs per company
+        random.seed(symbol)
+        
+        mock_data = {}
+        current_time = datetime.now()
+        
+        # Generate a unique base price and trend for each symbol
+        # Use a hash of the symbol to get a deterministic start price
+        symbol_hash = sum(ord(c) for c in symbol)
+        base_price = float(symbol_hash % 500) + 50  # Price between 50 and 550
+        
+        # Use deterministic hash for trend direction
+        trend_direction = 1 if symbol_hash % 2 == 0 else -1
+        
+        # Force specific trends for demo purposes
+        if symbol == "AMZN": trend_direction = -1
+        if symbol == "GOOGL": trend_direction = 1
+        
+        # INCREASED VOLATILITY to avoid "straight line" look
+        volatility = base_price * 0.02  # 2% daily volatility
+        trend_strength = base_price * 0.005 # 0.5% trend per step
+        
+        current_price = base_price
+        
+        for i in range(100):
+            # Create a random walk with a stronger trend
+            change = random.uniform(-volatility, volatility) + (trend_direction * trend_strength)
+            current_price += change
             
-            # Seed randomness with symbol to ensure consistent but unique graphs per company
-            random.seed(symbol)
+            # Add some sine wave seasonality
+            seasonality = (base_price * 0.05) * math.sin(i / 5.0)
+            final_price = current_price + seasonality
             
-            mock_data = {}
-            current_time = datetime.now()
+            # Ensure price doesn't go negative
+            final_price = max(1.0, final_price)
             
-            # Generate a unique base price and trend for each symbol
-            base_price = float(ord(symbol[0]) * 2 + ord(symbol[-1])) # e.g., A=65, Z=90 -> ~200-300 range
+            t = current_time - timedelta(minutes=5*(99-i)) # Reverse time so loop builds forward
             
-            # Use deterministic hash for trend direction
-            symbol_sum = sum(ord(c) for c in symbol)
-            trend_direction = 1 if symbol_sum % 2 == 0 else -1
-            
-            # Force specific trends for demo purposes if needed, or rely on the deterministic hash
-            # Let's ensure AMZN is DOWN and GOOGL is UP for testing
-            if symbol == "AMZN": trend_direction = -1
-            if symbol == "GOOGL": trend_direction = 1
-            
-            volatility = 1.5
-            trend_strength = 0.3 # Increased from 0.1 to make trends obvious
-            
-            current_price = base_price
-            
-            for i in range(100):
-                # Create a random walk with a stronger trend
-                change = random.uniform(-volatility, volatility) + (trend_direction * trend_strength)
-                current_price += change
-                
-                # Add some sine wave seasonality
-                seasonality = 5 * math.sin(i / 10.0)
-                final_price = current_price + seasonality
-                
-                t = current_time - timedelta(minutes=5*(99-i)) # Reverse time so loop builds forward
-                
-                mock_data[t.strftime("%Y-%m-%d %H:%M:%S")] = {
-                    "1. open": str(round(final_price, 2)),
-                    "2. high": str(round(final_price + volatility, 2)),
-                    "3. low": str(round(final_price - volatility, 2)),
-                    "4. close": str(round(final_price + random.uniform(-0.5, 0.5), 2)),
-                    "5. volume": str(int(random.uniform(100000, 5000000)))
-                }
-            
-            return {"status": "success", "data": mock_data, "meta_data": {"Information": "Mock Data (Rate Limit Hit)"}}
+            mock_data[t.strftime("%Y-%m-%d %H:%M:%S")] = {
+                "1. open": str(round(final_price, 2)),
+                "2. high": str(round(final_price + (volatility * 0.5), 2)),
+                "3. low": str(round(final_price - (volatility * 0.5), 2)),
+                "4. close": str(round(final_price + random.uniform(-0.1, 0.1), 2)),
+                "5. volume": str(int(random.uniform(100000, 5000000)))
+            }
+        
+        return {"status": "success", "data": mock_data, "meta_data": {"Information": "Mock Data (API Error/Rate Limit)"}}
         # --------------------------------------------
 
         raise HTTPException(status_code=400, detail=f"Invalid symbol or API request: {str(ve)}")

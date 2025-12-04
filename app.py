@@ -294,7 +294,7 @@ def render_home():
     st.markdown("---")
     st.markdown("### 🚨 Live Wire Trending")
     
-    alerts_container = st.container(height=400)
+    alerts_container = st.container()
     alerts = load_alerts()
     if not alerts:
         alerts_container.caption("No active alerts in feed.")
@@ -413,7 +413,7 @@ def render_analysis():
     # Live Alerts Feed
     with col_alerts:
         st.markdown("### 🚨 Live Wire")
-        alerts_container = st.container(height=600)
+        alerts_container = st.container()
         
         # Auto-refresh logic
         if 'last_refresh' not in st.session_state:

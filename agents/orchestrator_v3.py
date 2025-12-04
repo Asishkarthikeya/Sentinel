@@ -153,20 +153,49 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
             print(f"   Scan Intent Detected: {state['scan_intent']}")
             
             # Load watchlist
+            import json
             watchlist_path = "watchlist.json"
             if not os.path.exists(watchlist_path):
-                                scan_results.append({'symbol': sym, 'price': latest_close, 'change': pct_change})
-                            elif scan_intent == "ALL":
-                                scan_results.append({'symbol': sym, 'price': latest_close, 'change': pct_change})
-                
-                return {"market_data_results": {"scan_results": scan_results}}
-            except Exception as e:
-                print(f"   Error during scan: {e}")
-                return {"market_data_results": "Error executing scan."}
-
+                return {"market_data_results": {"error": "Watchlist not found. Please add symbols to your watchlist."}}
+            
+            with open(watchlist_path, 'r') as f:
+                watchlist = json.load(f)
+            
+            scan_results = []
+            scan_intent = state['scan_intent']
+            
+            for sym in watchlist:
+                # Get compact data for speed (always use INTRADAY for scans)
+                data = market_agent.get_market_data(symbol=sym, time_range="INTRADAY")
+                if isinstance(data, dict) and 'data' in data:
+                    ts = data['data']
+                    sorted_times = sorted(ts.keys())
+                    if len(sorted_times) > 0:
+                        latest_time = sorted_times[-1]
+                        earliest_time = sorted_times[0]
+                        latest_close = float(ts[latest_time]['4. close'])
+                        earliest_open = float(ts[earliest_time]['1. open'])
+                        pct_change = ((latest_close - earliest_open) / earliest_open) * 100
+                        
+                        # Filter based on scan intent
+                        if scan_intent == "UPWARD" and pct_change > 0:
+                            scan_results.append({"symbol": sym, "price": latest_close, "change": pct_change})
+                        elif scan_intent == "DOWNWARD" and pct_change < 0:
+                            scan_results.append({"symbol": sym, "price": latest_close, "change": pct_change})
+                        elif scan_intent == "ALL":
+                            scan_results.append({"symbol": sym, "price": latest_close, "change": pct_change})
+            
+            # Sort by change
+            scan_results.sort(key=lambda x: x['change'], reverse=True)
+            return {"market_data_results": {"scan_results": scan_results}}
+        
+        # Single symbol analysis
         if not state.get("symbol"):
             return {"market_data_results": "Skipped."}
-        results = market_agent.get_intraday_data(symbol=state["symbol"])
+        
+        time_range = state.get("time_range", "INTRADAY")
+        print(f"   Fetching market data for {state['symbol']} (time_range={time_range})")
+        results = market_agent.get_market_data(symbol=state["symbol"], time_range=time_range)
         return {"market_data_results": results, "debug_market_data_raw": results}
 
     def portfolio_data_step(state: AgentState):

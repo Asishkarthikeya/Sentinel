@@ -59,38 +59,50 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
     # 3. Define Nodes (Closure captures 'llm' and 'data_analyzer')
 
     def extract_symbol_step(state: AgentState):
-        print("--- 🔬 Symbol Extraction ---")
+        print("--- 🔬 Symbol & Time Range Extraction ---")
         prompt = f"""
         Analyze the user's request: "{state['task']}"
         
-        Your ONLY job is to determine: Does the user want analysis of ONE specific company, or a SCAN of multiple companies?
+        Extract TWO things:
+        1. Stock symbol or scan intent
+        2. Time range (if mentioned)
         
         RULES:
-        1. If the request mentions a SPECIFIC company name or ticker → Extract the symbol, set scan_intent to null
-        2. ONLY set scan_intent if the user explicitly asks for "top gainers", "losers", "scan", "compare multiple", etc.
-        3. When in doubt, assume it's a single-stock request (symbol), NOT a scan.
+        - If request mentions a SPECIFIC company → Extract symbol
+        - If request mentions time period → Extract time range
+        - ONLY set scan_intent for "top gainers", "losers", "scan market"
         
         Response Format: JSON ONLY.
         {{
             "symbol": "TICKER" or null,
-            "scan_intent": "DOWNWARD" | "UPWARD" | "ALL" or null
+            "scan_intent": "DOWNWARD" | "UPWARD" | "ALL" or null,
+            "time_range": "INTRADAY" | "1D" | "3D" | "1W" | "1M" | "3M" | "1Y" or null
         }}
         
-        Examples:
-        - "Analyze Tesla" → {{"symbol": "TSLA", "scan_intent": null}}
-        - "How is Apple doing?" → {{"symbol": "AAPL", "scan_intent": null}}
-        - "Report on NVDA" → {{"symbol": "NVDA", "scan_intent": null}}
-        - "Tesla stock analysis" → {{"symbol": "TSLA", "scan_intent": null}}
-        - "Show me top gainers" → {{"symbol": null, "scan_intent": "UPWARD"}}
-        - "Scan the market for losers" → {{"symbol": null, "scan_intent": "DOWNWARD"}}
-        - "Compare all stocks" → {{"symbol": null, "scan_intent": "ALL"}}
+        Time Range Examples:
+        - "today", "now", "current", "recent" → "INTRADAY"
+        - "yesterday", "1 day back" → "1D"
+        - "3 days back", "last 3 days" → "3D"
+        - "last week", "1 week", "7 days" → "1W"
+        - "last month", "1 month", "30 days" → "1M"
+        - "3 months", "quarter" → "3M"
+        - "1 year", "12 months" → "1Y"
         
-        CRITICAL: "Analyze [COMPANY]" = single stock analysis, NOT a scan!
+        Full Examples:
+        - "Analyze Tesla" → {{"symbol": "TSLA", "scan_intent": null, "time_range": null}}
+        - "3 days back stocks of Tesla" → {{"symbol": "TSLA", "scan_intent": null, "time_range": "3D"}}
+        - "Last week AAPL performance" → {{"symbol": "AAPL", "scan_intent": null, "time_range": "1W"}}
+        - "1 month trend for NVDA" → {{"symbol": "NVDA", "scan_intent": null, "time_range": "1M"}}
+        - "Recent analysis of Tesla" → {{"symbol": "TSLA", "scan_intent": null, "time_range": "INTRADAY"}}
+        - "Show me top gainers" → {{"symbol": null, "scan_intent": "UPWARD", "time_range": null}}
+        
+        CRITICAL: Default to null for time_range if not explicitly mentioned!
         """
         raw_response = llm.invoke(prompt).content.strip()
         
         symbol = None
         scan_intent = None
+        time_range = None
         
         try:
             import json
@@ -101,12 +113,13 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
                 data = json.loads(json_match.group(0))
                 symbol = data.get("symbol")
                 scan_intent = data.get("scan_intent")
+                time_range = data.get("time_range")
             else:
                 print(f"   WARNING: No JSON found in extraction response: {raw_response}")
                 # Fallback to simple cleaning
                 clean_resp = raw_response.strip().upper()
                 if "SCAN" in clean_resp or "GAINERS" in clean_resp or "LOSERS" in clean_resp:
-                    scan_intent = "ALL" # Default fallback
+                    scan_intent = "ALL"
                 elif len(clean_resp) <= 5 and clean_resp.isalpha():
                     symbol = clean_resp
         except Exception as e:
@@ -114,11 +127,16 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
         
         if symbol: symbol = symbol.upper().replace("$", "")
         
+        # Default time_range to INTRADAY if null (for backward compatibility)
+        if time_range is None:
+            time_range = "INTRADAY"
+        
         print(f"   Raw LLM Response: {raw_response}")
         print(f"   Extracted Symbol: {symbol}")
         print(f"   Scan Intent: {scan_intent}")
+        print(f"   Time Range: {time_range}")
         
-        return {"symbol": symbol, "scan_intent": scan_intent}
+        return {"symbol": symbol, "scan_intent": scan_intent, "time_range": time_range}
 
     def web_research_step(state: AgentState):
         print("--- 🔎 Web Research ---")

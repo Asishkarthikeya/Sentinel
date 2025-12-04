@@ -63,32 +63,51 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
         prompt = f"""
         Analyze the user's request: "{state['task']}"
         
-        1. If the user wants to analyze a specific stock, extract the ticker symbol (e.g., AAPL).
-        2. If the user wants to SCAN the market for companies matching a criteria (e.g., "companies that are downward", "top gainers", "market scan"), output 'SCAN: <CRITERIA>' (e.g., SCAN: DOWNWARD, SCAN: UPWARD, SCAN: ALL).
+        Extract the ticker symbol or scan intent.
         
-        Respond with ONLY the symbol or the SCAN command. If nothing matches, respond 'NONE'.
+        Response Format: JSON ONLY.
+        {{
+            "symbol": "TICKER" or null,
+            "scan_intent": "DOWNWARD" | "UPWARD" | "ALL" or null
+        }}
+        
+        Examples:
+        - "Analyze Tesla" -> {{"symbol": "TSLA", "scan_intent": null}}
+        - "Show me top gainers" -> {{"symbol": null, "scan_intent": "UPWARD"}}
+        - "How is Apple doing?" -> {{"symbol": "AAPL", "scan_intent": null}}
+        - "Hello" -> {{"symbol": null, "scan_intent": null}}
         """
         raw_response = llm.invoke(prompt).content.strip()
         
         symbol = None
         scan_intent = None
         
-        if "SCAN:" in raw_response.upper():
-            scan_intent = raw_response.upper().split("SCAN:")[1].strip()
-        else:
-            # Clean up the response
+        try:
+            import json
             import re
-            # Look for a sequence of 1-5 uppercase letters, possibly starting with $
-            match = re.search(r'\$?[A-Z]{1,5}', raw_response.upper())
-            if match and "NONE" not in raw_response.upper():
-                symbol = match.group(0).lstrip('$')
+            # Find JSON in response
+            json_match = re.search(r'\{.*\}', raw_response, re.DOTALL)
+            if json_match:
+                data = json.loads(json_match.group(0))
+                symbol = data.get("symbol")
+                scan_intent = data.get("scan_intent")
+            else:
+                print(f"   WARNING: No JSON found in extraction response: {raw_response}")
+                # Fallback to simple cleaning
+                clean_resp = raw_response.strip().upper()
+                if "SCAN" in clean_resp:
+                    scan_intent = "ALL" # Default fallback
+                elif len(clean_resp) <= 5 and clean_resp.isalpha():
+                    symbol = clean_resp
+        except Exception as e:
+            print(f"   Error parsing symbol extraction: {e}")
+        
+        if symbol: symbol = symbol.upper().replace("$", "")
         
         print(f"   Raw LLM Response: {raw_response}")
         print(f"   Extracted Symbol: {symbol}")
         print(f"   Scan Intent: {scan_intent}")
         
-        # Store scan intent in state (needs to be added to AgentState definition if strict typing is enforced, but TypedDict allows extras at runtime usually, or we can overload 'symbol')
-        # Better to overload 'symbol' or add a new key. Let's add 'scan_intent' to the return dict.
         return {"symbol": symbol, "scan_intent": scan_intent}
 
     def web_research_step(state: AgentState):

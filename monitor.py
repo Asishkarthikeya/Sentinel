@@ -10,7 +10,8 @@ from agents.tool_calling_agents import MarketDataAgent, WebResearchAgent
 # --- Configuration ---
 WATCHLIST_FILE = "watchlist.json"
 ALERTS_FILE = "alerts.json"
-CHECK_INTERVAL = 60  # Seconds
+CHECK_INTERVAL = 900  # 15 minutes (as per proposal)
+PRICE_ALERT_THRESHOLD = 3.0  # Alert if price moves > 3%
 
 # --- Logging Setup ---
 logging.basicConfig(
@@ -47,8 +48,8 @@ def save_alert(alert):
     
     # Prepend new alert
     alerts.insert(0, alert)
-    # Keep only last 50 alerts
-    alerts = alerts[:50]
+    # Keep only last 100 alerts (increased from 50)
+    alerts = alerts[:100]
     
     with open(ALERTS_FILE, 'w') as f:
         json.dump(alerts, f, indent=2)
@@ -67,21 +68,21 @@ def check_market_data(symbol):
         if not data:
             return None
 
-        # Get latest two data points to calculate change
+        # Get latest and 15-minute-ago data points to calculate change
         timestamps = sorted(list(data.keys()), reverse=True)
-        if len(timestamps) < 2:
+        if len(timestamps) < 4:  # Need at least 4 points (15 mins = 3 intervals)
             return None
             
         latest = data[timestamps[0]]
-        previous = data[timestamps[1]]
+        baseline = data[timestamps[min(3, len(timestamps)-1)]]  # 15 mins ago
         
         close_latest = float(latest.get("4. close", 0))
-        close_prev = float(previous.get("4. close", 0))
+        close_baseline = float(baseline.get("4. close", 0))
         
-        if close_prev == 0:
+        if close_baseline == 0:
             return None
             
-        pct_change = ((close_latest - close_prev) / close_prev) * 100
+        pct_change = ((close_latest - close_baseline) / close_baseline) * 100
         
         return {
             "price": close_latest,
@@ -117,7 +118,8 @@ def check_news(symbol):
 
 def run_monitor_loop():
     logger.info("--- 🛡️ Aegis Proactive Monitor Started ---")
-    logger.info(f"Monitoring watchlist every {CHECK_INTERVAL} seconds.")
+    logger.info(f"Monitoring watchlist every {CHECK_INTERVAL} seconds ({CHECK_INTERVAL/60:.0f} minutes).")
+    logger.info(f"Price alert threshold: {PRICE_ALERT_THRESHOLD}%")
     
     while True:
         watchlist = load_watchlist()
@@ -129,10 +131,10 @@ def run_monitor_loop():
                 # 1. Market Check
                 market_info = check_market_data(symbol)
                 if market_info:
-                    # Alert Logic: Price moved more than 0.5% in 5 mins (simulated high volatility)
-                    # In reality, you'd want a configurable threshold.
-                    if abs(market_info['change']) > 0.01: # Very low threshold for demo purposes
-                        alert_msg = f"🚨 PRICE ALERT: {symbol} moved {market_info['change']:.2f}% to ${market_info['price']:.2f}"
+                    # Alert Logic: Price moved more than threshold
+                    if abs(market_info['change']) > PRICE_ALERT_THRESHOLD:
+                        direction = "📈 UP" if market_info['change'] > 0 else "📉 DOWN"
+                        alert_msg = f"{direction} ALERT: {symbol} moved {market_info['change']:+.2f}% to ${market_info['price']:.2f}"
                         logger.info(alert_msg)
                         
                         save_alert({
@@ -146,9 +148,13 @@ def run_monitor_loop():
                 # 2. News Check (Simplified: Just log latest headline)
                 news_info = check_news(symbol)
                 if news_info:
-                    # In a real app, you'd check if this is "new" news.
-                    # Here we just log it if it looks significant (keyword search)
-                    keywords = ["acquisition", "earnings", "crash", "surge", "fda", "lawsuit"]
+                    # Check if this is "significant" news based on keywords
+                    keywords = [
+                        "acquisition", "merger", "earnings", "crash", "surge", "plunge",
+                        "fda", "lawsuit", "sec", "filing", "8-k", "10-k", "insider",
+                        "partnership", "deal", "bankruptcy", "recall", "investigation",
+                        "upgrade", "downgrade", "target", "buyback", "dividend"
+                    ]
                     if any(k in news_info['title'].lower() for k in keywords):
                         alert_msg = f"📰 NEWS ALERT: {symbol} - {news_info['title']}"
                         logger.info(alert_msg)

@@ -263,7 +263,7 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
         
         report_prompt = f"""
         You are a senior financial analyst writing a comprehensive "Alpha Report".
-        Your task is to synthesize all available information into a structured report.
+        Your task is to synthesize all available information into a structured, cited report.
 
         Original User Task: {state['task']}
         Target Symbol: {state.get('symbol', 'Unknown')}
@@ -275,24 +275,58 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
         - Internal Portfolio Context: {portfolio_data}
         ---
 
-        CRITICAL INSTRUCTION:
-        First, evaluate the "Available Information".
-        - If the Target Symbol is 'Unknown' OR if the Web Intelligence and Market Data contain no meaningful information about the company:
-          You MUST respond with: "I am not sure about this company as I could not find sufficient data."
-          Do NOT generate the rest of the report.
+        CRITICAL INSTRUCTIONS:
+        1. First, evaluate the "Available Information".
+           - If the Target Symbol is 'Unknown' OR if the Web Intelligence and Market Data contain no meaningful information:
+             You MUST respond with: "I am not sure about this company as I could not find sufficient data."
+             Do NOT generate the rest of the report.
 
-        Otherwise, generate the "Alpha Report" with the following sections. Ensure the report is concise, cited, and directly addresses the user's task.
+        2. Otherwise, generate the "Alpha Report" with the following sections:
 
-        1. Summary: A brief overview of the key findings and current situation.
-        2. Internal Context: Detail the firm's current exposure. 
-           - IF the firm has shares > 0: Present the data in a markdown table (Symbol | Shares | Average Cost).
-           - IF the firm has 0 shares: State clearly in text that there is no exposure (e.g. "The firm has no current exposure to [Symbol]."). CRITICAL: DO NOT create a markdown table if shares are 0.
-        3. Market Data: Summarize key market data points. ALWAYS present this section as a markdown table (Metric | Value | Implication).
-        4. Real-Time Intelligence:
-            - News: Highlight significant news (Source...)
-            - Filing: Mention any relevant filings (Source...)
-        5. Sentiment Analysis: Categorize the overall sentiment as "Positive", "Negative", or "Neutral" and provide a brief explanation.
-        6. Synthesis: Combine all information to provide actionable insights or conclusions.
+        ## 1. Executive Summary
+        A 2-3 sentence overview of the key findings and current situation.
+
+        ## 2. Internal Context
+        Detail the firm's current exposure:
+        - IF the firm has shares > 0: Present as a markdown table:
+          | Symbol | Shares | Avg Cost | Current Value |
+          |--------|--------|----------|---------------|
+        - IF the firm has 0 shares: State: "The firm has no current exposure to {state.get('symbol')}."
+
+        ## 3. Market Data
+        ALWAYS present as a markdown table:
+        | Metric | Value | Implication |
+        |--------|-------|-------------|
+        | Current Price | $XXX.XX | +/-X.X% vs. open |
+        | 5-Day Trend | Upward/Downward/Flat | Brief note |
+        | Volume | X.XXM | Above/Below average |
+
+        ## 4. Real-Time Intelligence
+        ### News
+        - **[Headline]** - [Brief summary] `[Source: URL]`
+        - **[Headline]** - [Brief summary] `[Source: URL]`
+
+        ### Filings (if any)
+        - **[Filing Type]** - [Brief description] `[Source: URL]`
+
+        ## 5. Sentiment Analysis
+        **Overall Sentiment:** Bullish / Bearish / Neutral
+
+        **Evidence:**
+        - [Specific fact from news/data supporting this sentiment]
+        - [Another supporting fact]
+
+        ## 6. Synthesis & Recommendations
+        Combine all information to provide actionable insights. Focus on:
+        - Key risks and opportunities
+        - Recommended actions (if any)
+        - Items to monitor
+
+        FORMATTING RULES:
+        - Use markdown headers (##, ###)
+        - Include URLs in backticks: `[Source: example.com]`
+        - Use tables for structured data
+        - Be concise but comprehensive
         """
         final_report = llm.invoke(report_prompt).content
         return {"final_report": final_report}

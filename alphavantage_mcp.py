@@ -93,19 +93,24 @@ async def get_market_data(payload: dict):
         if symbol == "GOOGL": trend_direction = 1
         
         # INCREASED VOLATILITY to avoid "straight line" look
-        volatility = base_price * 0.02  # 2% daily volatility
-        trend_strength = base_price * 0.005 # 0.5% trend per step
+        # Make it look like a real stock with noise and waves
+        volatility = base_price * 0.05  # 5% daily volatility (High!)
+        trend_strength = base_price * 0.002 # Reduced trend to let volatility show
         
         current_price = base_price
         
         for i in range(100):
-            # Create a random walk with a stronger trend
-            change = random.uniform(-volatility, volatility) + (trend_direction * trend_strength)
+            # Random walk
+            noise = random.uniform(-volatility, volatility)
+            
+            # Add multiple sine waves for "market cycles" look
+            cycle_1 = (base_price * 0.05) * math.sin(i / 8.0)
+            cycle_2 = (base_price * 0.02) * math.sin(i / 3.0)
+            
+            change = noise + (trend_direction * trend_strength)
             current_price += change
             
-            # Add some sine wave seasonality
-            seasonality = (base_price * 0.05) * math.sin(i / 5.0)
-            final_price = current_price + seasonality
+            final_price = current_price + cycle_1 + cycle_2
             
             # Ensure price doesn't go negative
             final_price = max(1.0, final_price)

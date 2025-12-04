@@ -133,18 +133,33 @@ class DataAnalysisAgent:
                 columns = viz.get("columns", [])
                 title = viz.get("title", "Generated Chart")
 
-                if not all(col in df.columns for col in columns):
-                    logger.warning(f"   Skipping chart '{title}': One or more columns {columns} not found in DataFrame.")
+                # Case-insensitive column matching
+                df_cols_lower = {col.lower(): col for col in df.columns}
+                
+                matched_columns = []
+                for col in columns:
+                    if col in df.columns:
+                        matched_columns.append(col)
+                    elif col.lower() in df_cols_lower:
+                        matched_columns.append(df_cols_lower[col.lower()])
+                
+                if len(matched_columns) != len(columns):
+                    logger.warning(f"   Skipping chart '{title}': Columns {columns} not found (tried case-insensitive). Available: {list(df.columns)}")
                     continue
-
-                if chart_type == "line" and len(columns) >= 2:
-                    fig = px.line(df, x=columns[0], y=columns[1], title=title, template="plotly_dark")
+                
+                # Use matched columns
+                x_col = matched_columns[0]
+                
+                if chart_type == "line" and len(matched_columns) >= 2:
+                    y_col = matched_columns[1]
+                    fig = px.line(df, x=x_col, y=y_col, title=title, template="plotly_dark")
                     charts.append(fig)
-                elif chart_type == "histogram" and len(columns) >= 1:
-                    fig = px.histogram(df, x=columns[0], title=title, template="plotly_dark")
+                elif chart_type == "histogram" and len(matched_columns) >= 1:
+                    fig = px.histogram(df, x=x_col, title=title, template="plotly_dark")
                     charts.append(fig)
-                elif chart_type == "scatter" and len(columns) >= 2:
-                    fig = px.scatter(df, x=columns[0], y=columns[1], title=title, template="plotly_dark")
+                elif chart_type == "scatter" and len(matched_columns) >= 2:
+                    y_col = matched_columns[1]
+                    fig = px.scatter(df, x=x_col, y=y_col, title=title, template="plotly_dark")
                     charts.append(fig)
             except Exception as e:
                 logger.error(f"   Failed to create chart of type {viz.get('type')}: {e}")

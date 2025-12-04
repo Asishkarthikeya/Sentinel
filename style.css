@@ -178,6 +178,23 @@ section[data-testid="stSidebar"] {
     padding: 16px;
     margin-bottom: 12px;
     border-radius: 8px;
+    transition: border-color 0.2s ease;
+}
+
+.alert-card:hover {
+    border-color: #333;
+}
+
+/* Market alerts - Red accent */
+.alert-market {
+    border-left: 3px solid #ef4444;
+    background: linear-gradient(90deg, rgba(239, 68, 68, 0.05) 0%, var(--card-bg) 100%);
+}
+
+/* News alerts - Blue accent */
+.alert-news {
+    border-left: 3px solid #3b82f6;
+    background: linear-gradient(90deg, rgba(59, 130, 246, 0.05) 0%, var(--card-bg) 100%);
 }
 
 .alert-header {

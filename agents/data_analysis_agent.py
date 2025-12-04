@@ -117,52 +117,91 @@ class DataAnalysisAgent:
             return {"insights": "Analysis generated, but detailed insights could not be parsed.", "visualizations": default_plan}
 
     def _create_charts(self, state: AnalysisState):
-        """Creates Plotly charts based on the visualization plan."""
+        """Creates Plotly charts - HARDCODED for reliability."""
         logger.info("--- 🎨 (Sub-Agent) Creating Charts ---")
-        df = state["dataframe"].reset_index()
-        viz_plans = state.get("visualizations", [])
+        
+        # 1. Prepare DataFrame
+        df = state["dataframe"].copy()
+        if df.index.name in ['timestamp', 'date', 'datetime', 'index']:
+            df = df.reset_index()
+        
+        # Normalize column names to lowercase
+        df.columns = [str(c).lower() for c in df.columns]
+        
         charts = []
-
-        if not viz_plans:
-            logger.warning("   No visualization plans found. Skipping chart creation.")
+        
+        # Find X-axis column (timestamp)
+        x_col = None
+        for candidate in ['timestamp', 'date', 'datetime', 'index']:
+            if candidate in df.columns:
+                x_col = candidate
+                break
+        
+        if not x_col:
+            logger.warning("   No timestamp column found. Skipping charts.")
             return {"charts": []}
-
-        for viz in viz_plans:
+        
+        # --- CHART 1: Price History (Line) ---
+        if 'close' in df.columns:
             try:
-                chart_type = viz.get("type", "").lower()
-                columns = viz.get("columns", [])
-                title = viz.get("title", "Generated Chart")
-
-                # Case-insensitive column matching
-                df_cols_lower = {col.lower(): col for col in df.columns}
+                logger.info(f"   Generating Price Chart (x={x_col}, y=close)")
+                fig = px.line(df, x=x_col, y='close', 
+                             title="📈 Price History", 
+                             template="plotly_dark",
+                             labels={'close': 'Price ($)', x_col: 'Time'})
+                fig.update_traces(line_color='#00ff41')
+                charts.append(fig)
+            except Exception as e:
+                logger.error(f"   Failed to generate price chart: {e}")
+        
+        # --- CHART 2: Volume (Bar) ---
+        if 'volume' in df.columns:
+            try:
+                logger.info(f"   Generating Volume Chart (x={x_col}, y=volume)")
+                fig = px.bar(df, x=x_col, y='volume',
+                            title="📊 Trading Volume",
+                            template="plotly_dark",
+                            labels={'volume': 'Volume', x_col: 'Time'})
+                fig.update_traces(marker_color='#ff6b35')
+                charts.append(fig)
+            except Exception as e:
+                logger.error(f"   Failed to generate volume chart: {e}")
+        
+        # --- CHART 3: Price vs Volume (Scatter) ---
+        if 'close' in df.columns and 'volume' in df.columns:
+            try:
+                logger.info("   Generating Price vs Volume Scatter Plot")
+                fig = px.scatter(df, x='volume', y='close',
+                                title="🔍 Price vs Volume Correlation",
+                                template="plotly_dark",
+                                labels={'volume': 'Trading Volume', 'close': 'Price ($)'},
+                                trendline="ols",  # Add regression line
+                                opacity=0.6)
+                fig.update_traces(marker=dict(size=8, color='#4ecdc4'))
+                charts.append(fig)
+            except Exception as e:
+                logger.error(f"   Failed to generate scatter plot: {e}")
+        
+        # --- CHART 4: Daily Returns Histogram ---
+        if 'close' in df.columns and len(df) > 1:
+            try:
+                logger.info("   Generating Daily Returns Histogram")
+                # Calculate returns
+                df['returns'] = df['close'].pct_change() * 100
+                df_returns = df.dropna(subset=['returns'])
                 
-                matched_columns = []
-                for col in columns:
-                    if col in df.columns:
-                        matched_columns.append(col)
-                    elif col.lower() in df_cols_lower:
-                        matched_columns.append(df_cols_lower[col.lower()])
-                
-                if len(matched_columns) != len(columns):
-                    logger.warning(f"   Skipping chart '{title}': Columns {columns} not found (tried case-insensitive). Available: {list(df.columns)}")
-                    continue
-                
-                # Use matched columns
-                x_col = matched_columns[0]
-                
-                if chart_type == "line" and len(matched_columns) >= 2:
-                    y_col = matched_columns[1]
-                    fig = px.line(df, x=x_col, y=y_col, title=title, template="plotly_dark")
-                    charts.append(fig)
-                elif chart_type == "histogram" and len(matched_columns) >= 1:
-                    fig = px.histogram(df, x=x_col, title=title, template="plotly_dark")
-                    charts.append(fig)
-                elif chart_type == "scatter" and len(matched_columns) >= 2:
-                    y_col = matched_columns[1]
-                    fig = px.scatter(df, x=x_col, y=y_col, title=title, template="plotly_dark")
+                if not df_returns.empty:
+                    fig = px.histogram(df_returns, x='returns',
+                                      nbins=30,
+                                      title="📊 Daily Returns Distribution",
+                                      template="plotly_dark",
+                                      labels={'returns': 'Daily Return (%)'})
+                    fig.update_traces(marker_color='#9b59b6')
+                    fig.add_vline(x=0, line_dash="dash", line_color="white", 
+                                 annotation_text="Zero Return", annotation_position="top")
                     charts.append(fig)
             except Exception as e:
-                logger.error(f"   Failed to create chart of type {viz.get('type')}: {e}")
+                logger.error(f"   Failed to generate histogram: {e}")
         
         logger.info(f"   Successfully created {len(charts)} charts.")
         return {"charts": charts}

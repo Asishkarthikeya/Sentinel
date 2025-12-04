@@ -146,42 +146,15 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
         return {"web_research_results": results}
 
     def market_data_step(state: AgentState):
-        print("--- 📈 Market Data ---")
-        scan_intent = state.get("scan_intent")
+        print("--- 📊 Market Data Retrieval ---")
         
-        if scan_intent:
-            print(f"   Executing Market Scan: {scan_intent}")
-            import json
+        # Handle scan intent
+        if state.get("scan_intent"):
+            print(f"   Scan Intent Detected: {state['scan_intent']}")
+            
+            # Load watchlist
             watchlist_path = "watchlist.json"
             if not os.path.exists(watchlist_path):
-                return {"market_data_results": "Watchlist not found."}
-            
-            try:
-                with open(watchlist_path, 'r') as f:
-                    watchlist = json.load(f)
-                
-                scan_results = []
-                for sym in watchlist:
-                    # Get compact data for speed
-                    data = market_agent.get_intraday_data(symbol=sym)
-                    if isinstance(data, dict) and 'data' in data:
-                        ts = data['data']
-                        # Calculate simple change (latest close - first open of the retrieved window)
-                        # Note: This is a rough approximation using the available 100 points
-                        sorted_times = sorted(ts.keys())
-                        if len(sorted_times) > 0:
-                            latest_time = sorted_times[-1]
-                            earliest_time = sorted_times[0]
-                            latest_close = float(ts[latest_time]['4. close'])
-                            earliest_open = float(ts[earliest_time]['1. open'])
-                            pct_change = ((latest_close - earliest_open) / earliest_open) * 100
-                            
-                            print(f"   DEBUG: {sym} -> Change: {pct_change:.2f}% (Intent: {scan_intent})")
-                            
-                            # Filter based on intent
-                            if scan_intent == "DOWNWARD" and pct_change < 0:
-                                scan_results.append({'symbol': sym, 'price': latest_close, 'change': pct_change})
-                            elif scan_intent == "UPWARD" and pct_change > 0:
                                 scan_results.append({'symbol': sym, 'price': latest_close, 'change': pct_change})
                             elif scan_intent == "ALL":
                                 scan_results.append({'symbol': sym, 'price': latest_close, 'change': pct_change})

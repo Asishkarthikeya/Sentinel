@@ -40,8 +40,8 @@ class WebResearchAgent(BaseAgent):
 
 class MarketDataAgent(BaseAgent):
     """An agent specialized in fetching financial market data."""
-    def get_intraday_data(self, symbol: str, interval: str = "5min") -> dict:
-        payload = { "symbol": symbol, "interval": interval }
+    def get_market_data(self, symbol: str, time_range: str = "INTRADAY") -> dict:
+        payload = { "symbol": symbol, "time_range": time_range }
         return self.call_mcp_gateway("alpha_vantage_market_data", payload)
 
 class InternalPortfolioAgent(BaseAgent):

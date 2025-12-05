@@ -57,6 +57,7 @@ async def get_market_data(payload: dict):
 
     logger.info(f"Received market data request for symbol: {symbol}, time_range: {time_range}")
 
+    try:
         # Route to appropriate API based on time range
         if time_range == "INTRADAY":
             # Intraday data (last 4-6 hours, 5-min intervals)

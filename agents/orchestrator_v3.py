@@ -291,12 +291,21 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
         market_summary = truncate(state.get('market_data_results', 'Not available'), 2000)
         portfolio_data = truncate(state.get('portfolio_data_results', 'Not available.'), 2000)
         
+        # Extract Data Source
+        market_data_raw = state.get("market_data_results", {})
+        data_source = "Unknown"
+        if isinstance(market_data_raw, dict):
+             meta = market_data_raw.get("meta_data", {})
+             if isinstance(meta, dict):
+                 data_source = meta.get("Source", "Real API (Alpha Vantage)")
+        
         report_prompt = f"""
         You are a senior financial analyst writing a comprehensive "Alpha Report".
         Your task is to synthesize all available information into a structured, cited report.
 
         Original User Task: {state['task']}
         Target Symbol: {state.get('symbol', 'Unknown')}
+        Data Source: {data_source}
         ---
         Available Information:
         - Web Intelligence: {web_data}
@@ -312,6 +321,9 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
              Do NOT generate the rest of the report.
 
         2. Otherwise, generate the "Alpha Report" with the following sections:
+        
+        > [!NOTE]
+        > **Data Source**: {data_source}
 
         ## 1. Executive Summary
         A 2-3 sentence overview of the key findings and current situation.

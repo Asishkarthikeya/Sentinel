@@ -57,12 +57,12 @@ async def get_market_data(payload: dict):
 
     logger.info(f"Received market data request for symbol: {symbol}, time_range: {time_range}")
 
-    try:
         # Route to appropriate API based on time range
         if time_range == "INTRADAY":
             # Intraday data (last 4-6 hours, 5-min intervals)
             data, meta_data = ts.get_intraday(symbol=symbol, interval="5min", outputsize='compact')
             logger.info(f"Successfully retrieved intraday data for {symbol}")
+            meta_data["Source"] = "Real API (Alpha Vantage)"
         else:
             # Daily data for historical ranges
             data, meta_data = ts.get_daily(symbol=symbol, outputsize='full')
@@ -71,6 +71,7 @@ async def get_market_data(payload: dict):
             # Filter data based on time range
             data = filter_data_by_time_range(data, time_range)
             logger.info(f"Filtered to {len(data)} data points for time_range={time_range}")
+            meta_data["Source"] = "Real API (Alpha Vantage)"
         
         return {"status": "success", "data": data, "meta_data": meta_data}
 
@@ -83,8 +84,11 @@ async def get_market_data(payload: dict):
         import math
         from datetime import datetime, timedelta
         
-        # Seed randomness with symbol
-        random.seed(symbol)
+        # Seed randomness with symbol AND date to ensure it changes daily
+        # But stays consistent within the same day
+        today_str = datetime.now().strftime("%Y-%m-%d")
+        seed_value = f"{symbol}_{today_str}"
+        random.seed(seed_value)
         
         mock_data = {}
         current_time = datetime.now()
@@ -100,6 +104,10 @@ async def get_market_data(payload: dict):
         if "MSFT" in symbol: base_price = 350.0
         if "GOOG" in symbol: base_price = 130.0
         if "AMZN" in symbol: base_price = 140.0
+        
+        # Add some daily variation to base price
+        daily_noise = (hash(today_str) % 100) / 10.0  # -5 to +5 variation
+        base_price += daily_noise
         
         trend_direction = 1 if symbol_hash % 2 == 0 else -1
         volatility = base_price * 0.02
@@ -154,7 +162,14 @@ async def get_market_data(payload: dict):
                 "5. volume": str(int(random.uniform(100000, 5000000)))
             }
         
-        return {"status": "success", "data": mock_data, "meta_data": {"Information": f"Mock Data ({time_range})"}}
+        return {
+            "status": "success", 
+            "data": mock_data, 
+            "meta_data": {
+                "Information": f"Mock Data ({time_range}) - API Limit/Error",
+                "Source": "Simulated (Fallback)"
+            }
+        }
 
 
 def filter_data_by_time_range(data: dict, time_range: str) -> dict:

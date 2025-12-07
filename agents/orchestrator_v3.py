@@ -49,7 +49,7 @@ def get_orchestrator(llm_provider="gemini", api_key=None):
         api_key = os.getenv("GOOGLE_API_KEY")
     if not api_key:
         raise ValueError("Google Gemini API Key is missing.")
-    llm = ChatGoogleGenerativeAI(model="gemini-2.0-flash", google_api_key=api_key, temperature=0)
+    llm = ChatGoogleGenerativeAI(model="gemini-1.5-flash", google_api_key=api_key, temperature=0, max_retries=5)
 
     # 2. Initialize Data Analyzer with the chosen LLM
     data_analyzer = DataAnalysisAgent(llm=llm)

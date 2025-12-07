@@ -32,17 +32,20 @@ def load_css(file_name):
 load_css("style.css")
 
 # --- Auto-Start Backend Services ---
+# --- Auto-Start Backend Services ---
+# --- Auto-Start Backend Services ---
 @st.cache_resource
 def start_background_services():
     """Checks if backend services are running and starts them if needed."""
+    # Check if Gateway is already running
     try:
         with httpx.Client(timeout=1.0) as client:
             response = client.get("http://127.0.0.1:8000/")
             if response.status_code == 200:
-                print("✅ Gateway is already running. Skipping startup.")
+                print("✅ Gateway is already running.")
                 return
     except:
-        print("⚠️ Gateway not found. Starting backend services...")
+        print("⚠️ Gateway not found. Initializing backend services...")
 
     services = [
         ["mcp_gateway.py", "8000"],
@@ -51,10 +54,8 @@ def start_background_services():
         ["private_mcp.py", "8003"]
     ]
 
-    if not os.path.exists("logs"):
-        os.makedirs("logs")
-
     env = os.environ.copy()
+    # Inject secrets
     try:
         def flatten_secrets(secrets, prefix=""):
             for key, value in secrets.items():
@@ -65,31 +66,35 @@ def start_background_services():
         
         if hasattr(st, "secrets"):
             flatten_secrets(st.secrets)
-            print("✅ Injected st.secrets into subprocess environment.")
+            print("✅ Secrets injected into subprocess environment.")
     except Exception as e:
-        print(f"⚠️ Failed to process st.secrets: {e}")
+        print(f"⚠️ Secrets injection warning: {e}")
 
+    # Start services - NON-BLOCKING, LOG TO STDOUT
+    cwd = os.path.dirname(os.path.abspath(__file__))
     for script, port in services:
-        print(f"🚀 Starting {script} on port {port}...")
-        log_file = open(f"logs/{script.replace('.py', '.log')}", "w")
+        print(f"🚀 Launching {script} on port {port}...")
+        # Use subprocess.Popen without waiting
         subprocess.Popen(
             [sys.executable, script],
-            cwd=os.path.dirname(os.path.abspath(__file__)),
-            stdout=log_file, 
-            stderr=subprocess.STDOUT,
-            env=env
+            cwd=cwd,
+            env=env,
+            # Inherit stdout/stderr so logs appear in Streamlit Cloud console
+            # stdout=subprocess.DEVNULL, 
+            # stderr=subprocess.DEVNULL
         )
     
-    print("🚀 Starting Monitor...")
-    monitor_log = open("logs/monitor.log", "w")
+    print("🚀 Launching Monitor...")
     subprocess.Popen(
         [sys.executable, "monitor.py"],
-        cwd=os.path.dirname(os.path.abspath(__file__)),
-        stdout=monitor_log,
-        stderr=subprocess.STDOUT
+        cwd=cwd,
+        env=env
     )
-    time.sleep(10)
+    
+    # Do NOT wait. Return immediately to let UI render.
+    print("✅ Background services launch triggered.")
 
+# Trigger startup (cached, runs once per container)
 start_background_services()
 
 # --- Helper Functions ---

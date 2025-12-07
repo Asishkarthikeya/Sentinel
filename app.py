@@ -233,6 +233,14 @@ def render_sidebar():
                         st.rerun()
 
 def render_home():
+    # Auto-refresh logic (Every 10s)
+    if 'last_refresh_home' not in st.session_state:
+        st.session_state.last_refresh_home = time.time()
+
+    if time.time() - st.session_state.last_refresh_home > 10:
+        st.session_state.last_refresh_home = time.time()
+        st.rerun()
+
     # Hero Section with Logo
     logo_base64 = get_base64_image("assets/logo.png")
     

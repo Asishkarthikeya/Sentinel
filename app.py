@@ -480,8 +480,9 @@ def render_diagnostics():
         st.markdown("---")
         st.subheader("Monitor Status")
         # Check if monitor log is updating
-        if os.path.exists("monitor.log"):
-            mtime = os.path.getmtime("monitor.log")
+        monitor_log_path = "logs/monitor.log"
+        if os.path.exists(monitor_log_path):
+            mtime = os.path.getmtime(monitor_log_path)
             age = time.time() - mtime
             if age < 60:
                 st.success(f"✅ Monitor Active (Last log: {int(age)}s ago)")
@@ -490,13 +491,13 @@ def render_diagnostics():
             
             # Show last few lines of monitor log
             try:
-                with open("monitor.log", "r") as f:
+                with open(monitor_log_path, "r") as f:
                     lines = f.readlines()
                     st.text("Last 5 Monitor Log Lines:")
                     st.code("".join(lines[-5:]), language="text")
             except: pass
         else:
-            st.error("❌ monitor.log NOT found")
+            st.error(f"❌ {monitor_log_path} NOT found")
 
         # Check alerts.json
         if os.path.exists("alerts.json"):

@@ -476,6 +476,35 @@ def render_diagnostics():
                         st.error(f"❌ {name}: ERROR ({response.status_code})")
             except Exception as e:
                 st.error(f"❌ {name}: OFFLINE ({str(e)})")
+        
+        st.markdown("---")
+        st.subheader("Monitor Status")
+        # Check if monitor log is updating
+        if os.path.exists("monitor.log"):
+            mtime = os.path.getmtime("monitor.log")
+            age = time.time() - mtime
+            if age < 60:
+                st.success(f"✅ Monitor Active (Last log: {int(age)}s ago)")
+            else:
+                st.error(f"❌ Monitor Stalled (Last log: {int(age)}s ago)")
+            
+            # Show last few lines of monitor log
+            try:
+                with open("monitor.log", "r") as f:
+                    lines = f.readlines()
+                    st.text("Last 5 Monitor Log Lines:")
+                    st.code("".join(lines[-5:]), language="text")
+            except: pass
+        else:
+            st.error("❌ monitor.log NOT found")
+
+        # Check alerts.json
+        if os.path.exists("alerts.json"):
+            atime = os.path.getmtime("alerts.json")
+            a_age = time.time() - atime
+            st.info(f"ℹ️ Alerts File Last Updated: {int(a_age)}s ago")
+        else:
+            st.warning("⚠️ alerts.json NOT found yet")
                 
     with col2:
         st.subheader("Configuration")

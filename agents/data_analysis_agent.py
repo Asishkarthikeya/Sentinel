@@ -195,13 +195,41 @@ class DataAnalysisAgent:
                                       nbins=30,
                                       title="📊 Daily Returns Distribution",
                                       template="plotly_dark",
-                                      labels={'returns': 'Daily Return (%)'})
-                    fig.update_traces(marker_color='#9b59b6')
+                                      labels={'returns': 'Daily Return (%)'},
+                                      color_discrete_sequence=['#9b59b6'])
                     fig.add_vline(x=0, line_dash="dash", line_color="white", 
                                  annotation_text="Zero Return", annotation_position="top")
                     charts.append(fig)
             except Exception as e:
                 logger.error(f"   Failed to generate histogram: {e}")
+        
+        # --- CHART 5: Box Plot (Price Distribution) ---
+        if 'close' in df.columns:
+            try:
+                logger.info("   Generating Box Plot")
+                fig = px.box(df, y='close',
+                            title="📦 Price Distribution (Box Plot)",
+                            template="plotly_dark",
+                            labels={'close': 'Price ($)'},
+                            color_discrete_sequence=['#a29bfe'])
+                charts.append(fig)
+            except Exception as e:
+                logger.error(f"   Failed to generate box plot: {e}")
+        
+        # --- CHART 6: Violin Plot (Volume Distribution) ---
+        if 'volume' in df.columns:
+            try:
+                logger.info("   Generating Violin Plot")
+                fig = px.violin(df, y='volume',
+                               title="🎻 Volume Distribution (Violin Plot)",
+                               template="plotly_dark",
+                               labels={'volume': 'Trading Volume'},
+                               color_discrete_sequence=['#74b9ff'],
+                               box=True,  # Show box plot inside violin
+                               points='all')  # Show all data points
+                charts.append(fig)
+            except Exception as e:
+                logger.error(f"   Failed to generate violin plot: {e}")
         
         logger.info(f"   Successfully created {len(charts)} charts.")
         return {"charts": charts}

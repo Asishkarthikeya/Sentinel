@@ -10,8 +10,8 @@ from agents.tool_calling_agents import MarketDataAgent, WebResearchAgent
 # --- Configuration ---
 WATCHLIST_FILE = "watchlist.json"
 ALERTS_FILE = "alerts.json"
-CHECK_INTERVAL = 900  # 15 minutes (as per proposal)
-PRICE_ALERT_THRESHOLD = 3.0  # Alert if price moves > 3%
+CHECK_INTERVAL = 10  # 10 seconds (Real-time feel)
+PRICE_ALERT_THRESHOLD = 0.5  # More sensitive alerts
 
 # --- Logging Setup ---
 logging.basicConfig(
@@ -57,8 +57,8 @@ def save_alert(alert):
 def check_market_data(symbol):
     try:
         logger.info(f"Checking market data for {symbol}...")
-        # Get compact intraday data
-        result = market_agent.get_intraday_data(symbol=symbol, interval="5min")
+        # Get compact intraday data (Corrected method call)
+        result = market_agent.get_market_data(symbol=symbol, time_range="INTRADAY")
         
         if result.get("status") != "success":
             logger.warning(f"Failed to get market data for {symbol}")

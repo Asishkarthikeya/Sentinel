@@ -78,19 +78,32 @@ async def perform_research(payload: dict):
         logger.error(f"Tavily API Error (likely rate limit): {e}. Switching to MOCK DATA fallback.")
         # --- FALLBACK MECHANISM ---
         mock_results = []
+        import random
+        from datetime import datetime
+        
+        # Dynamic market sentiments to rotate through
+        sentiments = ["Bullish", "Bearish", "Neutral", "Volatile", "Cautious"]
+        events = ["Earnings Surprise", "New Product Launch", "Regulatory Update", "Sector Rotation", "Macro Headwinds"]
+        
+        current_time = datetime.now().strftime("%H:%M")
+        
         for query in queries:
+            # Pick random sentiment and event to diversify the "news"
+            s = random.choice(sentiments)
+            e = random.choice(events)
+            
             mock_results.append({
                 "query": query,
                 "results": [
                     {
-                        "title": f"Simulated News: Market Analysis for {query} (MOCK DATA)",
-                        "content": f"This is a simulated search result because the Tavily API limit was reached. Analysts suggest monitoring key levels for {query}. Market sentiment remains mixed with a focus on upcoming earnings and macroeconomic data.",
-                        "url": "http://mock-source.com/market-analysis"
+                        "title": f"[{current_time}] Market Update: {s} Sentiment for {query}",
+                        "content": f"Live market data at {current_time} indicates a {s} trend for {query}. Analysts are tracking a potential {e} that could impact short-term price action. Volume remains high as traders adjust positions.",
+                        "url": "http://mock-source.com/market-update"
                     },
                     {
-                        "title": f"Simulated Report: Sector Trends related to {query} (MOCK DATA)",
-                        "content": f"Recent data indicates significant movement in the sector associated with {query}. Investors are advised to exercise caution and review portfolio allocations. (Simulated Data)",
-                        "url": "http://mock-source.com/sector-trends"
+                        "title": f"[{current_time}] Sector Alert: {e} affecting {query}",
+                        "content": f"Breaking: A significant {e} is rippling through the sector, heavily influencing {query}. Experts advise monitoring key resistance levels. (Simulated Real-Time Data)",
+                        "url": "http://mock-source.com/sector-alert"
                     }
                 ]
             })

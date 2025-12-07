@@ -87,7 +87,7 @@ async def get_market_data(payload: dict):
         
         # Seed randomness with symbol AND date to ensure it changes daily
         # But stays consistent within the same day
-        today_str = datetime.now().strftime("%Y-%m-%d")
+        today_str = datetime.now().strftime("%Y-%m-%d %H:%M")
         seed_value = f"{symbol}_{today_str}"
         random.seed(seed_value)
         

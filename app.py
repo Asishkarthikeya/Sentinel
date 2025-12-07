@@ -165,10 +165,6 @@ def render_sidebar():
             st.session_state.page = 'analysis'
             st.rerun()
 
-        if st.button("🛠️ System Diagnostics", use_container_width=True):
-            st.session_state.page = 'diagnostics'
-            st.rerun()
-
         st.markdown("---")
         
         # Settings - Completely Redesigned
@@ -458,103 +454,4 @@ def render_analysis():
                 """
                 alerts_container.markdown(html, unsafe_allow_html=True)
 
-def render_diagnostics():
-    st.markdown("## 🛠️ System Diagnostics")
-    st.markdown("Use this panel to debug deployment issues on Hugging Face/Cloud.")
-    
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        st.subheader("Process Status")
-        # Check ports
-        services = {
-            "Gateway (8000)": 8000,
-            "Tavily MCP (8001)": 8001,
-            "AlphaVantage MCP (8002)": 8002,
-            "Private MCP (8003)": 8003
-        }
-        
-        for name, port in services.items():
-            try:
-                with httpx.Client(timeout=1.0) as client:
-                    response = client.get(f"http://127.0.0.1:{port}/")
-                    if response.status_code == 200:
-                        st.success(f"✅ {name}: ONLINE")
-                    else:
-                        st.error(f"❌ {name}: ERROR ({response.status_code})")
-            except Exception as e:
-                st.error(f"❌ {name}: OFFLINE ({str(e)})")
-        
-        st.markdown("---")
-        st.subheader("Monitor Status")
-        # Check if monitor log is updating
-        monitor_log_path = "logs/monitor.log"
-        if os.path.exists(monitor_log_path):
-            mtime = os.path.getmtime(monitor_log_path)
-            age = time.time() - mtime
-            if age < 60:
-                st.success(f"✅ Monitor Active (Last log: {int(age)}s ago)")
-            else:
-                st.error(f"❌ Monitor Stalled (Last log: {int(age)}s ago)")
-            
-            # Show last few lines of monitor log
-            try:
-                with open(monitor_log_path, "r") as f:
-                    lines = f.readlines()
-                    st.text("Last 5 Monitor Log Lines:")
-                    st.code("".join(lines[-5:]), language="text")
-            except: pass
-        else:
-            st.error(f"❌ {monitor_log_path} NOT found")
-
-        # Check alerts.json
-        if os.path.exists("alerts.json"):
-            atime = os.path.getmtime("alerts.json")
-            a_age = time.time() - atime
-            st.info(f"ℹ️ Alerts File Last Updated: {int(a_age)}s ago")
-        else:
-            st.warning("⚠️ alerts.json NOT found yet")
-                
-    with col2:
-        st.subheader("Configuration")
-        st.write(f"**Current Working Directory:** `{os.getcwd()}`")
-        if os.path.exists(".env"):
-             st.success("✅ .env file found")
-        else:
-             st.warning("⚠️ .env file NOT found (Normal for Cloud if using secrets)")
-             
-        if os.path.exists("logs"):
-             st.success(f"✅ Logs directory exists ({len(os.listdir('logs'))} files)")
-        else:
-             st.error("❌ Logs directory MISSING")
-
-    st.markdown("---")
-    st.subheader("🔍 Log Inspector")
-    
-    log_dir = "logs"
-    if os.path.exists(log_dir):
-        log_files = [f for f in os.listdir(log_dir) if f.endswith(".log")]
-        selected_log = st.selectbox("Select Log File:", log_files)
-        
-        if selected_log:
-            log_path = os.path.join(log_dir, selected_log)
-            try:
-                with open(log_path, "r") as f:
-                    lines = f.readlines()
-                    # Show last 50 lines
-                    last_lines = "".join(lines[-50:])
-                    st.code(last_lines, language="text")
-            except Exception as e:
-                st.error(f"Error reading log: {e}")
-    else:
-        st.error("No logs directory found.")
-
-# --- Main Execution ---
-render_sidebar()
-
-if st.session_state.page == 'home':
-    render_home()
-elif st.session_state.page == 'analysis':
     render_analysis()
-elif st.session_state.page == 'diagnostics':
-    render_diagnostics()

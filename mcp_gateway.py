@@ -9,24 +9,43 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
-# --- Configuration ---
-TAVILY_MCP_URL = os.getenv("TAVILY_MCP_URL", "http://127.0.0.1:8001/research")
-ALPHAVANTAGE_MCP_URL = os.getenv("ALPHAVANTAGE_MCP_URL", "http://127.0.0.1:8002/market_data")
-PRIVATE_MCP_URL = os.getenv("PRIVATE_MCP_URL", "http://127.0.0.1:8003/portfolio_data")
-
 # --- Logging Setup ---
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 logger = logging.getLogger("MCP_Gateway")
 
+# --- Import Microservices for Consolidation ---
+try:
+    from tavily_mcp import app as tavily_app
+    from alphavantage_mcp import app as alphavantage_app
+    from private_mcp import app as private_app
+    logger.info("Successfully imported microservices for consolidation.")
+except ImportError as e:
+    logger.critical(f"Failed to import microservices: {e}")
+    raise
+
+# --- Configuration (Updated for Monolithic Mode) ---
+# Default to internal mounted paths on the same port (8000)
+TAVILY_MCP_URL = os.getenv("TAVILY_MCP_URL", "http://127.0.0.1:8000/tavily/research")
+ALPHAVANTAGE_MCP_URL = os.getenv("ALPHAVANTAGE_MCP_URL", "http://127.0.0.1:8000/alphavantage/market_data")
+PRIVATE_MCP_URL = os.getenv("PRIVATE_MCP_URL", "http://127.0.0.1:8000/private/portfolio_data")
+
 # --- FastAPI App ---
-app = FastAPI(title="Aegis MCP Gateway")
+app = FastAPI(title="Aegis MCP Gateway (Monolith)")
+
+# --- Mount Microservices ---
+app.mount("/tavily", tavily_app)
+app.mount("/alphavantage", alphavantage_app)
+app.mount("/private", private_app)
+
 client = httpx.AsyncClient()
 
 @app.middleware("http")
 async def audit_log_middleware(request: Request, call_next):
-    logger.info(f"Request received: {request.method} {request.url} from {request.client.host}")
+    # Skip logging for internal sub-app calls to reduce noise if needed, 
+    # but strictly speaking this middleware triggers for the parent app.
+    # Requests to mounted apps might bypass this or trigger it depending on path matching.
+    logger.info(f"Request received: {request.method} {request.url}")
     response = await call_next(request)
-    logger.info(f"Response status: {response.status_code}")
     return response
 
 @app.post("/route_agent_request")
@@ -49,6 +68,8 @@ async def route_agent_request(request_data: dict):
         raise HTTPException(status_code=400, detail=f"Invalid target service: {target_service}")
 
     try:
+        # Self-referential call (Gateway -> Mounted App on same server)
+        # We must ensure we don't block. HTTPX AsyncClient handles this well.
         response = await client.post(target_url, json=payload, timeout=180.0)
         response.raise_for_status()
         return JSONResponse(content=response.json(), status_code=response.status_code)
@@ -65,7 +86,7 @@ async def route_agent_request(request_data: dict):
 
 @app.get("/")
 def read_root():
-    return {"message": "Aegis MCP Gateway is operational."}
+    return {"message": "Aegis MCP Gateway (Monolithic) is operational."}
 
 if __name__ == "__main__":
     uvicorn.run(app, host="127.0.0.1", port=8000)

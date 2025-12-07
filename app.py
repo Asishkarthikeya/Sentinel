@@ -48,10 +48,7 @@ def start_background_services():
         print("⚠️ Gateway not found. Initializing backend services...")
 
     services = [
-        ["mcp_gateway.py", "8000"],
-        ["tavily_mcp.py", "8001"],
-        ["alphavantage_mcp.py", "8002"],
-        ["private_mcp.py", "8003"]
+        ["mcp_gateway.py", "8000"]
     ]
 
     env = os.environ.copy()

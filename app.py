@@ -36,60 +36,8 @@ load_css("style.css")
 # --- Auto-Start Backend Services ---
 @st.cache_resource
 def start_background_services():
-    """Checks if backend services are running and starts them if needed."""
-    # Check if Gateway is already running
-    try:
-        with httpx.Client(timeout=1.0) as client:
-            response = client.get("http://127.0.0.1:8000/")
-            if response.status_code == 200:
-                print("✅ Gateway is already running.")
-                return
-    except:
-        print("⚠️ Gateway not found. Initializing backend services...")
-
-    services = [
-        ["mcp_gateway.py", "8000"]
-    ]
-
-    env = os.environ.copy()
-    # Inject secrets
-    try:
-        def flatten_secrets(secrets, prefix=""):
-            for key, value in secrets.items():
-                if isinstance(value, dict):
-                    flatten_secrets(value, f"{prefix}{key}_")
-                else:
-                    env[f"{prefix}{key}"] = str(value)
-        
-        if hasattr(st, "secrets"):
-            flatten_secrets(st.secrets)
-            print("✅ Secrets injected into subprocess environment.")
-    except Exception as e:
-        print(f"⚠️ Secrets injection warning: {e}")
-
-    # Start services - NON-BLOCKING, LOG TO STDOUT
-    cwd = os.path.dirname(os.path.abspath(__file__))
-    for script, port in services:
-        print(f"🚀 Launching {script} on port {port}...")
-        # Use subprocess.Popen without waiting
-        subprocess.Popen(
-            [sys.executable, script],
-            cwd=cwd,
-            env=env,
-            # Inherit stdout/stderr so logs appear in Streamlit Cloud console
-            # stdout=subprocess.DEVNULL, 
-            # stderr=subprocess.DEVNULL
-        )
-    
-    print("🚀 Launching Monitor...")
-    subprocess.Popen(
-        [sys.executable, "monitor.py"],
-        cwd=cwd,
-        env=env
-    )
-    
-    # Do NOT wait. Return immediately to let UI render.
-    print("✅ Background services launch triggered.")
+    # Managed by main.py in production
+    pass
 
 # Trigger startup (cached, runs once per container)
 start_background_services()

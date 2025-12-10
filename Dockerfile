@@ -20,5 +20,5 @@ COPY . .
 # Expose the port Hugging Face expects
 EXPOSE 7860
 
-# Run Streamlit on port 7860
-CMD ["streamlit", "run", "app.py", "--server.port", "7860", "--server.address", "0.0.0.0"]
+# Run the orchestration script
+CMD ["python", "main.py"]
